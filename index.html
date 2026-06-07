@@ -6,7 +6,7 @@
     <title>Will you go on a date with me? 💕</title>
     
     <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <style>
         * {
@@ -23,6 +23,51 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+        }
+
+        .page-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-16px);
+            min-width: min(92vw, 420px);
+            max-width: 420px;
+            padding: 14px 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.96);
+            color: #b44f78;
+            border: 1px solid rgba(255, 107, 157, 0.18);
+            box-shadow: 0 16px 36px rgba(255, 107, 157, 0.18);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease, transform 0.28s ease;
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        .page-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .page-toast.success {
+            color: #8a3f63;
+            border-color: rgba(255, 182, 213, 0.4);
+        }
+
+        .page-toast.error {
+            color: #9e4767;
+            border-color: rgba(255, 136, 171, 0.38);
+        }
+
+        @media (max-width: 600px) {
+            .page-toast {
+                top: 14px;
+                padding: 12px 16px;
+                border-radius: 16px;
+            }
         }
 
         .container {
@@ -120,8 +165,10 @@
         .btn-no {
             background: #f0f0f0;
             color: #666;
-            position: relative;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
         }
 
         .btn-no:hover {
@@ -167,22 +214,114 @@
             font-size: 0.95rem;
         }
 
-        .form-group input[type="date"],
-        .form-group input[type="time"] {
-            padding: 12px 15px;
-            border: 2px solid #ffe4f5;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #fff9fb;
+        .modern-date-picker {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
         }
 
-        .form-group input[type="date"]:focus,
+        .date-select-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .date-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ffe4f5;
+            border-radius: 16px;
+            font-size: 1rem;
+            background: #fff9fb;
+            color: #7a4b63;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.06);
+        }
+
+        .date-select:focus,
         .form-group input[type="time"]:focus {
             outline: none;
             border-color: #ff6b9d;
             box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
             background: white;
+        }
+
+        .date-select:hover,
+        .form-group input[type="time"]:hover {
+            border-color: #ffc0d6;
+            background: #fff;
+        }
+
+        .date-select option {
+            color: #5f3a4f;
+        }
+
+        .date-help {
+            font-size: 0.85rem;
+            color: #9f7588;
+            margin-top: -4px;
+        }
+
+        .modern-time-picker {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .time-select-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .time-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ffe4f5;
+            border-radius: 16px;
+            font-size: 1rem;
+            background: #fff9fb;
+            color: #7a4b63;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.06);
+        }
+
+        .time-select:focus {
+            outline: none;
+            border-color: #ff6b9d;
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+            background: white;
+        }
+
+        .time-select:hover {
+            border-color: #ffc0d6;
+            background: #fff;
+        }
+
+        .time-select option {
+            color: #5f3a4f;
+        }
+
+        .time-help {
+            font-size: 0.85rem;
+            color: #9f7588;
+            margin-top: -4px;
+        }
+
+        @media (max-width: 600px) {
+            .modern-date-picker {
+                grid-template-columns: 1fr;
+            }
+
+            .modern-time-picker {
+                grid-template-columns: 1fr;
+            }
         }
 
         .btn-primary {
@@ -375,10 +514,11 @@
     </style>
 </head>
 <body>
+    <div class="page-toast" id="pageToast" role="status" aria-live="polite" aria-atomic="true"></div>
     <div class="container">
         <!-- ===== BƯỚC 1: LỜI MỜI ===== -->
         <div class="step-1" id="step1">
-            <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=500&h=400&fit=crop" alt="Lovely couple" class="proposal-image">
+            <img src="IMG_7785.png" alt="Lovely couple" class="proposal-image" id="proposalImage">
             <p class="proposal-text">Will you go on a date with me?</p>
             <div class="button-group">
                 <button class="btn btn-yes" id="btnYes">Yes ❤️</button>
@@ -391,13 +531,48 @@
             <h2 class="step-title">So... when are you free? 🗓️</h2>
             
             <div class="form-group">
-                <label for="dateInput">Pick a date:</label>
-                <input type="date" id="dateInput" required>
+                <label>Pick a date:</label>
+                <div class="modern-date-picker">
+                    <div class="date-select-wrapper">
+                        <select id="daySelect" class="date-select" required>
+                            <option value="">Ngày</option>
+                        </select>
+                    </div>
+
+                    <div class="date-select-wrapper">
+                        <select id="monthSelect" class="date-select" required>
+                            <option value="">Tháng</option>
+                        </select>
+                    </div>
+
+                    <div class="date-select-wrapper">
+                        <select id="yearSelect" class="date-select" required>
+                            <option value="">Năm</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="timeInput">Pick a time:</label>
-                <input type="time" id="timeInput" required>
+                <div class="modern-time-picker">
+                    <div class="time-select-wrapper">
+                        <select id="hourSelect" class="time-select" required>
+                            <option value="">Giờ</option>
+                        </select>
+                    </div>
+
+                    <div class="time-select-wrapper">
+                        <select id="minuteSelect" class="time-select" required>
+                            <option value="">Phút</option>
+                        </select>
+                    </div>
+
+                    <div class="time-select-wrapper">
+                        <select id="periodSelect" class="time-select" required>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <button class="btn-primary" id="btnSetDate">Set the date? 💕</button>
@@ -502,10 +677,14 @@
         //    - YOUR_PUBLIC_KEY: Public Key từ tài khoản EmailJS
         
         // Khởi tạo EmailJS (chỉ cần làm một lần)
-        emailjs.init({
-            publicKey: "2rbwTM5UekAFNyNJc", // Public Key của bạn
-            blockHeadless: false
-        });
+        if (window.emailjs && typeof window.emailjs.init === 'function') {
+            window.emailjs.init({
+                publicKey: "2rbwTM5UekAFNyNJc", // Public Key của bạn
+                blockHeadless: false
+            });
+        } else {
+            console.warn('EmailJS SDK chưa tải được. Các nút Yes/No vẫn hoạt động, nhưng chức năng gửi email sẽ không dùng được.');
+        }
 
         const SERVICE_ID = "service_c9m7veh";      // Service ID của bạn
         const TEMPLATE_ID = "template_r2qyl76";    // Template ID của bạn
@@ -524,8 +703,12 @@
         const btnSetDate = document.getElementById('btnSetDate');
         const btnConfirm = document.getElementById('btnConfirm');
 
-        const dateInput = document.getElementById('dateInput');
-        const timeInput = document.getElementById('timeInput');
+        const daySelect = document.getElementById('daySelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const hourSelect = document.getElementById('hourSelect');
+        const minuteSelect = document.getElementById('minuteSelect');
+        const periodSelect = document.getElementById('periodSelect');
 
         // ============================================================
         // Variables to store user choices
@@ -533,6 +716,119 @@
         let selectedDate = '';
         let selectedTime = '';
         let selectedFoods = [];
+
+        const pageToast = document.getElementById('pageToast');
+        let toastTimeoutId = null;
+
+        function showCuteAlert(message) {
+            if (!pageToast) return;
+
+            clearTimeout(toastTimeoutId);
+            pageToast.classList.remove('show', 'success', 'error');
+            pageToast.textContent = `💗 ${message}`;
+
+            requestAnimationFrame(() => {
+                pageToast.classList.add('show');
+            });
+
+            toastTimeoutId = setTimeout(() => {
+                pageToast.classList.remove('show');
+            }, 3000);
+        }
+
+        const monthNames = [
+            'Tháng 1',
+            'Tháng 2',
+            'Tháng 3',
+            'Tháng 4',
+            'Tháng 5',
+            'Tháng 6',
+            'Tháng 7',
+            'Tháng 8',
+            'Tháng 9',
+            'Tháng 10',
+            'Tháng 11',
+            'Tháng 12'
+        ];
+
+        function populateDateSelects() {
+            const currentYear = new Date().getFullYear();
+
+            for (let day = 1; day <= 31; day += 1) {
+                const option = document.createElement('option');
+                option.value = String(day).padStart(2, '0');
+                option.textContent = String(day).padStart(2, '0');
+                daySelect.appendChild(option);
+            }
+
+            monthNames.forEach((monthName, index) => {
+                const option = document.createElement('option');
+                option.value = String(index + 1).padStart(2, '0');
+                option.textContent = monthName;
+                monthSelect.appendChild(option);
+            });
+
+            for (let year = currentYear; year <= currentYear + 5; year += 1) {
+                const option = document.createElement('option');
+                option.value = String(year);
+                option.textContent = String(year);
+                yearSelect.appendChild(option);
+            }
+
+            daySelect.value = '01';
+            monthSelect.value = String(new Date().getMonth() + 1).padStart(2, '0');
+            yearSelect.value = String(currentYear);
+        }
+
+        function populateTimeSelects() {
+            for (let hour = 1; hour <= 12; hour += 1) {
+                const option = document.createElement('option');
+                option.value = String(hour).padStart(2, '0');
+                option.textContent = String(hour).padStart(2, '0');
+                hourSelect.appendChild(option);
+            }
+
+            for (let minute = 0; minute < 60; minute += 5) {
+                const option = document.createElement('option');
+                option.value = String(minute).padStart(2, '0');
+                option.textContent = String(minute).padStart(2, '0');
+                minuteSelect.appendChild(option);
+            }
+
+            ['AM', 'PM'].forEach((period) => {
+                const option = document.createElement('option');
+                option.value = period;
+                option.textContent = period;
+                periodSelect.appendChild(option);
+            });
+
+            hourSelect.value = '07';
+            minuteSelect.value = '00';
+            periodSelect.value = 'PM';
+        }
+
+        function syncDayOptions() {
+            const currentDay = daySelect.value;
+            const month = Number(monthSelect.value);
+            const year = Number(yearSelect.value);
+
+            if (!month || !year) return;
+
+            const maxDay = new Date(year, month, 0).getDate();
+            const selectedDay = Number(currentDay || '1');
+
+            daySelect.innerHTML = '<option value="">Ngày</option>';
+
+            for (let day = 1; day <= maxDay; day += 1) {
+                const option = document.createElement('option');
+                option.value = String(day).padStart(2, '0');
+                option.textContent = String(day).padStart(2, '0');
+                daySelect.appendChild(option);
+            }
+
+            const safeDay = Math.min(selectedDay, maxDay);
+            daySelect.value = String(safeDay).padStart(2, '0');
+        }
 
         // ============================================================
         // BƯỚC 1: Xử lý nút "Yes" và "No"
@@ -544,43 +840,133 @@
             step2.classList.remove('hidden');
         });
 
-        // Nút "No" - Di chuyển ngẫu nhiên (không thể click được)
+        // Nút "No" - né chuột/chạm ngay khi tiến gần
         btnNo.addEventListener('mouseenter', function() {
-            moveButtonAway(btnNo);
+            moveNoButtonAway({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
         });
 
-        // Cho cảm ứng trên điện thoại
+        btnNo.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            moveNoButtonAway({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+        });
+
+        btnNo.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            moveNoButtonAway(e);
+        });
+
         btnNo.addEventListener('touchstart', function(e) {
             e.preventDefault();
-            moveButtonAway(btnNo);
-        });
+            e.stopPropagation();
+            moveNoButtonAway(e.touches && e.touches[0] ? e.touches[0] : { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+        }, { passive: false });
 
-        function moveButtonAway(button) {
-            // Lấy kích thước màn hình
-            const maxX = window.innerWidth - button.offsetWidth - 20;
-            const maxY = window.innerHeight - button.offsetHeight - 20;
+        document.addEventListener('touchstart', function(e) {
+            if (step1.classList.contains('hidden')) return;
 
-            // Tạo vị trí ngẫu nhiên
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
+            const touch = e.touches && e.touches[0];
+            if (!touch) return;
 
-            // Áp dụng vị trí mới
-            button.style.position = 'fixed';
-            button.style.left = randomX + 'px';
-            button.style.top = randomY + 'px';
+            const rect = btnNo.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const distance = Math.hypot(touch.clientX - centerX, touch.clientY - centerY);
+
+            if (distance < 220) {
+                e.preventDefault();
+                moveNoButtonAway(touch);
+            }
+        }, { passive: false });
+
+        document.addEventListener('mousemove', function(e) {
+            if (step1.classList.contains('hidden')) return;
+
+            const rect = btnNo.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+
+            if (distance < 180) {
+                moveNoButtonAway(e);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            if (step1.classList.contains('hidden')) return;
+
+            const touch = e.touches && e.touches[0];
+            if (!touch) return;
+
+            const rect = btnNo.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const distance = Math.hypot(touch.clientX - centerX, touch.clientY - centerY);
+
+            if (distance < 180) {
+                moveNoButtonAway(touch);
+            }
+        }, { passive: true });
+
+        function moveNoButtonAway(pointer) {
+            const margin = 18;
+            const buttonWidth = btnNo.offsetWidth;
+            const buttonHeight = btnNo.offsetHeight;
+            const maxX = Math.max(margin, window.innerWidth - buttonWidth - margin);
+            const maxY = Math.max(margin, window.innerHeight - buttonHeight - margin);
+
+            let nextLeft = margin;
+            let nextTop = margin;
+            let tries = 0;
+
+            do {
+                nextLeft = margin + Math.random() * (maxX - margin);
+                nextTop = margin + Math.random() * (maxY - margin);
+                tries += 1;
+            } while (
+                pointer &&
+                tries < 25 &&
+                Math.hypot(
+                    (nextLeft + buttonWidth / 2) - pointer.clientX,
+                    (nextTop + buttonHeight / 2) - pointer.clientY
+                ) < 220
+            );
+
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = `${nextLeft}px`;
+            btnNo.style.top = `${nextTop}px`;
+            btnNo.style.zIndex = '9999';
+            btnNo.style.transition = 'none';
+            btnNo.style.pointerEvents = 'auto';
         }
+
+        populateDateSelects();
+        populateTimeSelects();
+        syncDayOptions();
+
+        monthSelect.addEventListener('change', syncDayOptions);
+        yearSelect.addEventListener('change', syncDayOptions);
+
+        // Load ảnh từ localStorage nếu có
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedImageUrl = localStorage.getItem('proposalImageUrl');
+            if (savedImageUrl) {
+                document.getElementById('proposalImage').src = savedImageUrl;
+            }
+        });
 
         // ============================================================
         // BƯỚC 2: Xử lý chọn ngày và giờ
         // ============================================================
         btnSetDate.addEventListener('click', function() {
-            if (!dateInput.value || !timeInput.value) {
-                alert('Vui lòng chọn ngày và giờ!');
+            if (!daySelect.value || !monthSelect.value || !yearSelect.value || !hourSelect.value || !minuteSelect.value || !periodSelect.value) {
+                showCuteAlert('Ôi, mình chọn ngày và giờ trước nhé nè ✨');
                 return;
             }
 
-            selectedDate = dateInput.value;
-            selectedTime = timeInput.value;
+            selectedDate = `${daySelect.value}/${monthSelect.value}/${yearSelect.value}`;
+            selectedTime = `${hourSelect.value}:${minuteSelect.value} ${periodSelect.value}`;
 
             // Chuyển sang bước 3
             step2.classList.add('hidden');
@@ -595,7 +981,7 @@
             const foodCheckboxes = document.querySelectorAll('input[name="food"]:checked');
             
             if (foodCheckboxes.length === 0) {
-                alert('Vui lòng chọn ít nhất một món ăn!');
+                showCuteAlert('Chọn cho anh vài món em thích đi nè 🍓');
                 return;
             }
 
@@ -610,30 +996,31 @@
         // BƯỚC 4: Gửi email và hiển thị thành công
         // ============================================================
         function sendEmail() {
-            // Định dạng ngày giờ
-            const dateObj = new Date(selectedDate);
-            const formattedDate = dateObj.toLocaleDateString('vi-VN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
             const formattedFood = selectedFoods.join(', ');
+
+            if (!window.emailjs || typeof window.emailjs.send !== 'function') {
+                console.error('EmailJS SDK chưa sẵn sàng. Không thể gửi email.');
+                showCuteAlert('Ôi, hệ thống gửi thư chưa sẵn sàng mất rồi 💌 Hãy kiểm tra mạng hoặc tải lại trang nhé.');
+                btnConfirm.disabled = false;
+                btnConfirm.textContent = 'Confirm & Send! ❤️';
+                return;
+            }
 
             // Dữ liệu để gửi
             const emailData = {
                 sender_name: "Bạn gái",
                 sender_email: RECEIVER_EMAIL,
-                date: formattedDate,
+                date: selectedDate,
                 time: selectedTime,
                 foods: formattedFood
             };
 
             // Hiển thị thông báo loading
             btnConfirm.disabled = true;
-            btnConfirm.textContent = 'Đang gửi...';
+            btnConfirm.textContent = 'Đang viết thư tình... 💌';
 
             // Gửi email qua EmailJS
-            emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData)
+            window.emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData)
                 .then(function(response) {
                     console.log('Email sent successfully!', response.status, response.text);
                     
@@ -642,13 +1029,13 @@
                     step4.classList.remove('hidden');
 
                     // Điền thông tin chi tiết
-                    document.getElementById('successDate').textContent = formattedDate;
+                    document.getElementById('successDate').textContent = selectedDate;
                     document.getElementById('successTime').textContent = selectedTime;
                     document.getElementById('successFood').textContent = formattedFood;
                 })
                 .catch(function(error) {
                     console.log('FAILED...', error);
-                    alert('Lỗi gửi email: ' + JSON.stringify(error) + '\n\nVui lòng kiểm tra cấu hình EmailJS (Service ID, Template ID, Public Key)');
+                    showCuteAlert('Ôi không, thư tình chưa bay đi được rồi 😿 Hãy kiểm tra lại EmailJS nhé.');
                     btnConfirm.disabled = false;
                     btnConfirm.textContent = 'Confirm & Send! ❤️';
                 });
