@@ -752,7 +752,10 @@
         ];
 
         function populateDateSelects() {
-            const currentYear = new Date().getFullYear();
+            const today = new Date();
+            const currentDay = String(today.getDate()).padStart(2, '0');
+            const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+            const currentYear = today.getFullYear();
 
             for (let day = 1; day <= 31; day += 1) {
                 const option = document.createElement('option');
@@ -775,9 +778,11 @@
                 yearSelect.appendChild(option);
             }
 
-            daySelect.value = '01';
-            monthSelect.value = String(new Date().getMonth() + 1).padStart(2, '0');
+            daySelect.value = currentDay;
+            monthSelect.value = currentMonth;
             yearSelect.value = String(currentYear);
+
+            syncDayOptions();
         }
 
         function populateTimeSelects() {
