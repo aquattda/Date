@@ -1,0 +1,12 @@
+{
+  "name": "date-proposal",
+  "version": "1.0.0",
+  "description": "A romantic single page date proposal website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p $PORT -c-1"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
