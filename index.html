@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you go on a date with me? 💕</title>
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/index.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffd6e8 0%, #fff5f7 50%, #ffe4f5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(255, 105, 180, 0.2);
+            padding: 40px 30px;
+            text-align: center;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* === BƯỚC 1: LỜI MỜI === */
+        .step-1 {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .step-1.hidden {
+            display: none;
+        }
+
+        .proposal-image {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            border-radius: 20px;
+            object-fit: cover;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.15);
+        }
+
+        .proposal-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            line-height: 1.4;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 600px) {
+            .proposal-text {
+                font-size: 1.5rem;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff6b9d, #ff85a2);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-yes:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-no {
+            background: #f0f0f0;
+            color: #666;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-no:hover {
+            background: #e8e8e8;
+        }
+
+        /* === BƯỚC 2: CHỌN THỜI GIAN === */
+        .step-2 {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .step-2.hidden {
+            display: none;
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .step-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #ff85a2;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
+            padding: 12px 15px;
+            border: 2px solid #ffe4f5;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff9fb;
+        }
+
+        .form-group input[type="date"]:focus,
+        .form-group input[type="time"]:focus {
+            outline: none;
+            border-color: #ff6b9d;
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+            background: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b9d, #ff85a2);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        /* === BƯỚC 3: CHỌN MÓN ĂN === */
+        .step-3 {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .step-3.hidden {
+            display: none;
+        }
+
+        .food-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .food-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
+        .food-item {
+            position: relative;
+        }
+
+        .food-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .food-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px 15px;
+            background: #fff5f7;
+            border: 2px solid #ffe4f5;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .food-item input[type="checkbox"]:checked + .food-label {
+            background: linear-gradient(135deg, #fff0f5, #ffe4f5);
+            border-color: #ff6b9d;
+            color: #ff6b9d;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.2);
+        }
+
+        .food-icon {
+            font-size: 2rem;
+        }
+
+        /* === BƯỚC 4: THÀNH CÔNG === */
+        .step-4 {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .step-4.hidden {
+            display: none;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .success-message {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .success-message {
+                font-size: 1.2rem;
+            }
+        }
+
+        .success-details {
+            background: #fff5f7;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .success-details p {
+            margin: 8px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b9d;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Responsive mobile */
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+
+            .proposal-text {
+                font-size: 1.3rem;
+            }
+
+            .button-group {
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== BƯỚC 1: LỜI MỜI ===== -->
+        <div class="step-1" id="step1">
+            <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=500&h=400&fit=crop" alt="Lovely couple" class="proposal-image">
+            <p class="proposal-text">Will you go on a date with me?</p>
+            <div class="button-group">
+                <button class="btn btn-yes" id="btnYes">Yes ❤️</button>
+                <button class="btn btn-no" id="btnNo">No</button>
+            </div>
+        </div>
+
+        <!-- ===== BƯỚC 2: CHỌN THỜI GIAN ===== -->
+        <div class="step-2 hidden" id="step2">
+            <h2 class="step-title">So... when are you free? 🗓️</h2>
+            
+            <div class="form-group">
+                <label for="dateInput">Pick a date:</label>
+                <input type="date" id="dateInput" required>
+            </div>
+
+            <div class="form-group">
+                <label for="timeInput">Pick a time:</label>
+                <input type="time" id="timeInput" required>
+            </div>
+
+            <button class="btn-primary" id="btnSetDate">Set the date? 💕</button>
+        </div>
+
+        <!-- ===== BƯỚC 3: CHỌN MÓN ĂN ===== -->
+        <div class="step-3 hidden" id="step3">
+            <h2 class="step-title">What are we feeling? 😋</h2>
+            
+            <div class="food-options">
+                <div class="food-item">
+                    <input type="checkbox" id="food-hotpot" name="food" value="Hotpot">
+                    <label for="food-hotpot" class="food-label">
+                        <span class="food-icon">🍲</span>
+                        <span>Hotpot</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-bbq" name="food" value="BBQ">
+                    <label for="food-bbq" class="food-label">
+                        <span class="food-icon">🔥</span>
+                        <span>BBQ</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-sushi" name="food" value="Sushi">
+                    <label for="food-sushi" class="food-label">
+                        <span class="food-icon">🍣</span>
+                        <span>Sushi</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-cafe" name="food" value="Cafe">
+                    <label for="food-cafe" class="food-label">
+                        <span class="food-icon">☕</span>
+                        <span>Cafe</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-bubble" name="food" value="Bubble Tea">
+                    <label for="food-bubble" class="food-label">
+                        <span class="food-icon">🧋</span>
+                        <span>Bubble Tea</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-pizza" name="food" value="Pizza">
+                    <label for="food-pizza" class="food-label">
+                        <span class="food-icon">🍕</span>
+                        <span>Pizza</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-korean" name="food" value="Korean BBQ">
+                    <label for="food-korean" class="food-label">
+                        <span class="food-icon">🥘</span>
+                        <span>Korean BBQ</span>
+                    </label>
+                </div>
+
+                <div class="food-item">
+                    <input type="checkbox" id="food-dessert" name="food" value="Dessert">
+                    <label for="food-dessert" class="food-label">
+                        <span class="food-icon">🍰</span>
+                        <span>Dessert</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btnConfirm">Confirm & Send! ❤️</button>
+        </div>
+
+        <!-- ===== BƯỚC 4: THÀNH CÔNG ===== -->
+        <div class="step-4 hidden" id="step4">
+            <div class="success-icon">🎉</div>
+            <p class="success-message">Yayyy! Lịch hẹn đã được gửi tới anh rồi. Hẹn gặp em vào hôm đó nhé! 🥰</p>
+            <div class="success-details">
+                <p><strong>📅 Ngày:</strong> <span id="successDate"></span></p>
+                <p><strong>⏰ Giờ:</strong> <span id="successTime"></span></p>
+                <p><strong>🍽️ Món ăn:</strong> <span id="successFood"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // EmailJS Configuration
+        // ============================================================
+        // HƯỚNG DẪN: Để kích hoạt gửi email, bạn cần:
+        // 1. Đăng ký tài khoản miễn phí tại: https://www.emailjs.com/
+        // 2. Tạo một Email Service (ví dụ: Gmail)
+        // 3. Tạo một Email Template với các biến: {{sender_name}}, {{sender_email}}, {{date}}, {{time}}, {{foods}}
+        // 4. Thay thế các giá trị dưới đây:
+        //    - YOUR_SERVICE_ID: ID của service bạn vừa tạo
+        //    - YOUR_TEMPLATE_ID: ID của template bạn vừa tạo
+        //    - YOUR_PUBLIC_KEY: Public Key từ tài khoản EmailJS
+        
+        // Khởi tạo EmailJS (chỉ cần làm một lần)
+        emailjs.init({
+            publicKey: "2rbwTM5UekAFNyNJc", // Public Key của bạn
+            blockHeadless: false
+        });
+
+        const SERVICE_ID = "service_c9m7veh";      // Service ID của bạn
+        const TEMPLATE_ID = "template_r2qyl76";    // Template ID của bạn
+        const RECEIVER_EMAIL = "aquattda@gmail.com";
+
+        // ============================================================
+        // DOM Elements
+        // ============================================================
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const btnSetDate = document.getElementById('btnSetDate');
+        const btnConfirm = document.getElementById('btnConfirm');
+
+        const dateInput = document.getElementById('dateInput');
+        const timeInput = document.getElementById('timeInput');
+
+        // ============================================================
+        // Variables to store user choices
+        // ============================================================
+        let selectedDate = '';
+        let selectedTime = '';
+        let selectedFoods = [];
+
+        // ============================================================
+        // BƯỚC 1: Xử lý nút "Yes" và "No"
+        // ============================================================
+        
+        // Nút "Yes" - Chuyển sang bước 2
+        btnYes.addEventListener('click', function() {
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+        });
+
+        // Nút "No" - Di chuyển ngẫu nhiên (không thể click được)
+        btnNo.addEventListener('mouseenter', function() {
+            moveButtonAway(btnNo);
+        });
+
+        // Cho cảm ứng trên điện thoại
+        btnNo.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            moveButtonAway(btnNo);
+        });
+
+        function moveButtonAway(button) {
+            // Lấy kích thước màn hình
+            const maxX = window.innerWidth - button.offsetWidth - 20;
+            const maxY = window.innerHeight - button.offsetHeight - 20;
+
+            // Tạo vị trí ngẫu nhiên
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            // Áp dụng vị trí mới
+            button.style.position = 'fixed';
+            button.style.left = randomX + 'px';
+            button.style.top = randomY + 'px';
+        }
+
+        // ============================================================
+        // BƯỚC 2: Xử lý chọn ngày và giờ
+        // ============================================================
+        btnSetDate.addEventListener('click', function() {
+            if (!dateInput.value || !timeInput.value) {
+                alert('Vui lòng chọn ngày và giờ!');
+                return;
+            }
+
+            selectedDate = dateInput.value;
+            selectedTime = timeInput.value;
+
+            // Chuyển sang bước 3
+            step2.classList.add('hidden');
+            step3.classList.remove('hidden');
+        });
+
+        // ============================================================
+        // BƯỚC 3: Xử lý chọn món ăn
+        // ============================================================
+        btnConfirm.addEventListener('click', function() {
+            // Lấy các checkbox được chọn
+            const foodCheckboxes = document.querySelectorAll('input[name="food"]:checked');
+            
+            if (foodCheckboxes.length === 0) {
+                alert('Vui lòng chọn ít nhất một món ăn!');
+                return;
+            }
+
+            // Lấy giá trị của các checkbox
+            selectedFoods = Array.from(foodCheckboxes).map(checkbox => checkbox.value);
+
+            // Gửi dữ liệu và chuyển sang bước 4
+            sendEmail();
+        });
+
+        // ============================================================
+        // BƯỚC 4: Gửi email và hiển thị thành công
+        // ============================================================
+        function sendEmail() {
+            // Định dạng ngày giờ
+            const dateObj = new Date(selectedDate);
+            const formattedDate = dateObj.toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const formattedFood = selectedFoods.join(', ');
+
+            // Dữ liệu để gửi
+            const emailData = {
+                sender_name: "Bạn gái",
+                sender_email: RECEIVER_EMAIL,
+                date: formattedDate,
+                time: selectedTime,
+                foods: formattedFood
+            };
+
+            // Hiển thị thông báo loading
+            btnConfirm.disabled = true;
+            btnConfirm.textContent = 'Đang gửi...';
+
+            // Gửi email qua EmailJS
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData)
+                .then(function(response) {
+                    console.log('Email sent successfully!', response.status, response.text);
+                    
+                    // Hiển thị bước 4 - Thành công
+                    step3.classList.add('hidden');
+                    step4.classList.remove('hidden');
+
+                    // Điền thông tin chi tiết
+                    document.getElementById('successDate').textContent = formattedDate;
+                    document.getElementById('successTime').textContent = selectedTime;
+                    document.getElementById('successFood').textContent = formattedFood;
+                })
+                .catch(function(error) {
+                    console.log('FAILED...', error);
+                    alert('Lỗi gửi email: ' + JSON.stringify(error) + '\n\nVui lòng kiểm tra cấu hình EmailJS (Service ID, Template ID, Public Key)');
+                    btnConfirm.disabled = false;
+                    btnConfirm.textContent = 'Confirm & Send! ❤️';
+                });
+        }
+
+        // ============================================================
+        // HƯỚNG DẪN CẤU HÌNH EmailJS
+        // ============================================================
+        /*
+        BƯỚC 1: Đăng ký EmailJS
+        - Truy cập https://www.emailjs.com/
+        - Đăng ký tài khoản miễn phí (hoặc đăng nhập nếu đã có)
+
+        BƯỚC 2: Tạo Email Service
+        - Vào "Email Services" → "Add New Service"
+        - Chọn Gmail (hoặc provider khác)
+        - Làm theo hướng dẫn để kết nối với email của bạn
+        - Sao chép Service ID (ví dụ: service_abc123xyz)
+
+        BƯỚC 3: Tạo Email Template
+        - Vào "Email Templates" → "Create New Template"
+        - Đặt tên template (ví dụ: "date_proposal")
+        - Tạo template với nội dung như sau:
+
+        ========== NỘI DUNG TEMPLATE ==========
+        Subject: Đã nhận được yêu cầu hẹn hò! 💕
+
+        Body:
+        Chào anh,
+
+        Em vừa nhận được lời mời hẹn hò của anh!
+
+        📅 Ngày hẹn: {{date}}
+        ⏰ Giờ hẹn: {{time}}
+        🍽️ Sẽ ăn gì: {{foods}}
+
+        Hẹn gặp anh! 🥰
+
+        Yêu thương,
+        Em
+        ==========================================
+
+        - Sao chép Template ID (ở cửa sổ template settings)
+
+        BƯỚC 4: Lấy Public Key
+        - Vào "Account" → "API Keys"
+        - Sao chép "Public Key"
+
+        BƯỚC 5: Cập nhật code
+        - Thay YOUR_PUBLIC_KEY bằng Public Key bạn vừa sao chép
+        - Thay YOUR_SERVICE_ID bằng Service ID
+        - Thay YOUR_TEMPLATE_ID bằng Template ID
+
+        BƯỚC 6: Test
+        - Mở trang web và thực hiện các bước
+        - Sau khi confirm, email sẽ được gửi
+        - Kiểm tra email nhận được tại aquattda@gmail.com
+        */
+
+    </script>
+</body>
+</html>
